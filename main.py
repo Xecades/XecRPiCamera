@@ -1,3 +1,4 @@
+import os
 import cv2
 import sys
 import subprocess
@@ -31,7 +32,7 @@ class MainWindow(QMainWindow):
         self.UPDATE_DELAY = 70
         self.DISPLAY_W = 160
         self.DISPLAY_H = 120
-        self.DCIM = "~/DCIM"
+        self.DCIM = os.path.expanduser("~/DCIM")
         self.DNG = RPICAM2DNG()
 
         self.camlock = False
@@ -77,7 +78,7 @@ class MainWindow(QMainWindow):
         self.button.setGeometry(x, y, w, h)
         self.button.clicked.connect(self.renderGallery)
 
-        loc = util.fetchLocalImages()
+        loc = util.fetchLocalImages(self.DCIM)
         self.updateGalleryImage(loc[-1] if loc else None)
 
     def updateGalleryImage(self, img=None):
