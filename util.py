@@ -8,8 +8,8 @@ def __console__(color, message):
     print(f"{color}[{timestamp}] {message}{NC}")
 
 
-def log(message): return __console__("\033[0;32m", message)
-def error(message): return __console__("\033[0;31m", message)
+def log(m): return __console__("\033[0;32m", m)
+def error(m): return __console__("\033[0;31m", m)
 
 
 def ensureFolder(path):
@@ -29,6 +29,6 @@ def fetchLocalImages(path, extension=".jpg"):
     files = [f for f in dist if os.path.isfile(os.path.join(path, f))]
     jpg_files = [f for f in files if f.lower().endswith(extension)]
     full_paths = [os.path.join(path, f) for f in jpg_files]
-    sorted_files = sorted(full_paths, key=os.path.getmtime)
+    sorted_files = sorted(full_paths, key=os.path.getmtime, reverse=True)
 
     return sorted_files
