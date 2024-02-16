@@ -1,3 +1,4 @@
 *.jpg
 *.dng
 *.sh
+.DS_Store

@@ -15,32 +15,41 @@ class Window(QMainWindow):
 
         self.camlock = False
 
-        util.log("Starting Xecades RPi Camera")
+        util.log(f"Starting {CAM_NAME}")
         util.ensureFolder(DCIM)
 
-        self.setWindowTitle("Xecades Camera")
+        self.setWindowTitle(CAM_NAME)
+        self.setStyleSheet(f"background-color: {BG_COLOR};")
 
         self.cameraView = CameraView(self)
 
         self.showFullScreen()
 
-    def renderGallery(self):
-        util.log("Rendering gallery")
+        self.cameraView.button.click()
+
+    def enterGallery(self):
+        util.log("Entering gallery")
 
         self.cameraView.preview.pause()
         self.cameraView.hide()
 
         if not hasattr(self, "galleryView"):
             self.galleryView = GalleryView(self)
+        self.galleryView.pos = 0
+        self.galleryView.update()
         self.galleryView.show()
 
     def exitGallery(self):
         util.log("Exiting gallery")
 
+        self.galleryView.hide()
         self.cameraView.show()
         self.cameraView.preview.resume()
 
     def takeSnapshot(self):
+        if self.camlock:
+            return
+
         util.log("Taking snapshot")
 
         self.camlock = True
@@ -50,7 +59,8 @@ class Window(QMainWindow):
         file = f"snapshot_{timestamp}.jpg"
         path = f"{DCIM}/{file}"
 
-        cmd = ["raspistill", "--raw", "-vf", "-hf", "-n", "-o", path]
+        cmd = ["raspistill", "--raw", "-vf", "-hf",
+               "-n", "-x", f"IFD0.Model='{CAM_NAME}'", "-o", path]
         ret = subprocess.call(cmd)
         if ret == 0:
             util.log(f"Snapshot taken and saved at {path}")
@@ -67,9 +77,8 @@ class Window(QMainWindow):
         self.camlock = False
 
     def mousePressEvent(self, event):
-        if event.button() == Qt.LeftButton:
-            if self.cameraView.preview.underMouse() and not self.camlock:
-                self.takeSnapshot()
+        if event.button() == Qt.LeftButton and self.cameraView.preview.underMouse():
+            self.takeSnapshot()
 
 
 app = QApplication(sys.argv)

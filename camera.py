@@ -9,7 +9,7 @@ from PyQt5.QtCore import QTimer
 class CameraView:
     def __init__(self, parent):
         self.preview = PreviewLabel(parent)
-        self.button = GalleryButton(parent, parent.renderGallery)
+        self.button = GalleryButton(parent, parent.enterGallery)
 
     def hide(self):
         self.preview.hide()
@@ -24,8 +24,7 @@ class PreviewLabel(QLabel):
     def __init__(self, parent):
         super().__init__(parent)
 
-        util.log("Rendering camera view")
-        util.log(f"Display width={SCREEN_W}, height={SCREEN_H}")
+        util.log(f"Rendering camera view, width={SCREEN_W}, height={SCREEN_H}")
 
         self.setScaledContents(True)
         self.setGeometry(0, 0, SCREEN_W, SCREEN_H)
@@ -72,7 +71,8 @@ class PreviewLabel(QLabel):
 
             self.setPixmap(QPixmap.fromImage(img))
         else:
-            util.error("Failed to capture frame")
+            # util.error("Failed to capture frame")
+            pass
 
 
 class GalleryButton(QPushButton):
@@ -83,8 +83,7 @@ class GalleryButton(QPushButton):
         x = int(SCREEN_W - w - 10)
         y = int(SCREEN_H - h - 10)
 
-        util.log("Rendering gallery switcher button")
-        util.log(f"Gallery button width={w}, height={h}, x={x}, y={y}")
+        util.log(f"Rendering gallery switcher button, width={w}, height={h}, x={x}, y={y}")
 
         self.setGeometry(x, y, w, h)
         self.clicked.connect(action)
