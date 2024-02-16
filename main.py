@@ -22,10 +22,9 @@ class Window(QMainWindow):
         self.setStyleSheet(f"background-color: {BG_COLOR};")
 
         self.cameraView = CameraView(self)
-
         self.showFullScreen()
 
-        self.cameraView.button.click()
+        self.galleryView = GalleryView(self)
 
     def enterGallery(self):
         util.log("Entering gallery")
@@ -33,8 +32,6 @@ class Window(QMainWindow):
         self.cameraView.preview.pause()
         self.cameraView.hide()
 
-        if not hasattr(self, "galleryView"):
-            self.galleryView = GalleryView(self)
         self.galleryView.pos = 0
         self.galleryView.update()
         self.galleryView.show()
@@ -43,8 +40,8 @@ class Window(QMainWindow):
         util.log("Exiting gallery")
 
         self.galleryView.hide()
-        self.cameraView.show()
         self.cameraView.preview.resume()
+        self.cameraView.show()
 
     def takeSnapshot(self):
         if self.camlock:
@@ -60,11 +57,13 @@ class Window(QMainWindow):
         path = f"{DCIM}/{file}"
 
         cmd = ["raspistill", "--raw", "-vf", "-hf",
-               "-n", "-x", f"IFD0.Model='{CAM_NAME}'", "-o", path]
+               "-n", "-x", f"IFD0.Make={CAM_NAME}", "-o", path]
         ret = subprocess.call(cmd)
         if ret == 0:
             util.log(f"Snapshot taken and saved at {path}")
             self.cameraView.button.updateThumbnail(path)
+            self.galleryView.refreshList()
+            self.galleryView.update()
         else:
             util.error(f"Failed to take snapshot")
 
@@ -79,6 +78,8 @@ class Window(QMainWindow):
     def mousePressEvent(self, event):
         if event.button() == Qt.LeftButton and self.cameraView.preview.underMouse():
             self.takeSnapshot()
+        if event.button() == Qt.LeftButton and not self.galleryView.delete.underMouse():
+            self.galleryView.restoreDeleteButton()
 
 
 app = QApplication(sys.argv)

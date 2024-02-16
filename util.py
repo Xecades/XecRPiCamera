@@ -12,6 +12,13 @@ def log(m): return __console__("\033[0;32m", m)
 def error(m): return __console__("\033[0;31m", m)
 
 
+def hook(f1, f2):
+    def wrapper():
+        f1()
+        f2()
+    return wrapper
+
+
 def ensureFolder(path):
     if not os.path.exists(path):
         log(f"{path} does not exist, creating")

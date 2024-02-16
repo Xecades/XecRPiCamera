@@ -26,8 +26,8 @@ class PreviewLabel(QLabel):
 
         util.log(f"Rendering camera view, width={SCREEN_W}, height={SCREEN_H}")
 
-        self.setScaledContents(True)
         self.setGeometry(0, 0, SCREEN_W, SCREEN_H)
+        self.setScaledContents(True)
 
         self.configureCap()
         self.configureTimer()
@@ -43,6 +43,7 @@ class PreviewLabel(QLabel):
         self.cap.set(cv2.CAP_PROP_FOURCC, cv2.VideoWriter_fourcc(*"MJPG"))
         self.cap.set(cv2.CAP_PROP_FRAME_WIDTH, DISPLAY_W)
         self.cap.set(cv2.CAP_PROP_FRAME_HEIGHT, DISPLAY_H)
+        self.cap.set(cv2.CAP_PROP_FPS, 30)
 
     def configureTimer(self):
         util.log("Configuring timer")
@@ -71,21 +72,20 @@ class PreviewLabel(QLabel):
 
             self.setPixmap(QPixmap.fromImage(img))
         else:
-            # util.error("Failed to capture frame")
-            pass
+            util.error("Failed to capture frame")
 
 
 class GalleryButton(QPushButton):
     def __init__(self, parent, action):
         super().__init__(parent)
 
-        w, h = 120, 90
-        x = int(SCREEN_W - w - 10)
-        y = int(SCREEN_H - h - 10)
+        W, H = 120, 90
+        X = SCREEN_W - W - 10
+        Y = SCREEN_H - H - 10
 
-        util.log(f"Rendering gallery switcher button, width={w}, height={h}, x={x}, y={y}")
+        util.log(f"Rendering gallery switcher button, width={W}, height={H}, x={X}, y={Y}")
 
-        self.setGeometry(x, y, w, h)
+        self.setGeometry(X, Y, W, H)
         self.clicked.connect(action)
 
         imgs = util.fetchLocalImages(DCIM)
