@@ -43,10 +43,9 @@ class GalleryView:
 
             img = self.imgs[self.pos]
             
-            util.log(f"Deleting image {img} and its DNG file")
+            util.log(f"Deleting image {img}")
 
             os.remove(img)
-            os.remove(img.replace(".jpg", ".dng"))
 
             self.refreshList()
             self.pos = min(self.pos, len(self.imgs) - 1)

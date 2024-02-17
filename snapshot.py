@@ -13,7 +13,8 @@ class Snapshot:
 
         GPIO.setmode(GPIO.BCM)
         GPIO.setup(self.pin, GPIO.IN, pull_up_down=GPIO.PUD_UP)
-        GPIO.add_event_detect(self.pin, GPIO.FALLING, callback=self.take, bouncetime=200)
+        GPIO.add_event_detect(self.pin, GPIO.FALLING,
+                              callback=self.take, bouncetime=200)
 
     def take(self, _):
         if self.lock:
@@ -28,8 +29,8 @@ class Snapshot:
         file = f"snapshot_{timestamp}.jpg"
         path = f"{DCIM}/{file}"
 
-        cmd = ["raspistill", "--raw", "-vf", "-hf",
-               "-n", "-x", f"IFD0.Make={CAM_NAME}", "-o", path]
+        cmd = ["raspistill", "-vf", "-hf", "-n",
+               "-x", f"IFD0.Make={CAM_NAME}", "-o", path]
         ret = subprocess.call(cmd)
 
         if ret == 0:
@@ -39,13 +40,9 @@ class Snapshot:
             self.pa.galleryView.refreshList()
             self.pa.galleryView.update()
             self.pa.cameraView.preview.resume()
-
-            util.log(f"Converting {file} to DNG")
-            DNG.convert(path)
-            util.log(f"DNG file saved at {path.replace('.jpg', '.dng')}")
         else:
-            self.pa.cameraView.preview.resume()
             util.error(f"Failed to take snapshot")
+            self.pa.cameraView.preview.resume()
 
         self.lock = False
 

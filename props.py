@@ -1,5 +1,4 @@
 import os
-from pidng.core import RPICAM2DNG
 
 MARGIN = 10
 SCREEN_W = 480
@@ -7,12 +6,11 @@ SCREEN_H = 320
 UPDATE_DELAY = 30
 DISPLAY_W = 480
 DISPLAY_H = 320
-G_INFO_H = 45
+G_INFO_H = 50
 G_META_H = 25
 G_PREVIEW_H = SCREEN_H - G_INFO_H - G_META_H
 G_PREVIEW_W = int(G_PREVIEW_H * 4 / 3)
 DCIM = os.path.expanduser("~/DCIM")
-DNG = RPICAM2DNG()
 SNAPSHOT_PIN = 26
 CAM_NAME = "LYY&HZ Camera"
 BG_COLOR = "#000"

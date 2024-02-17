@@ -1,4 +1,5 @@
 *.jpg
 *.dng
 *.sh
+*.tmp.*
 .DS_Store

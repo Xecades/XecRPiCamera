@@ -1,7 +1,6 @@
 import sys
 import util
 from PyQt5.QtWidgets import QApplication, QMainWindow
-from PyQt5.QtCore import Qt
 from props import *
 from camera import CameraView
 from gallery import GalleryView
