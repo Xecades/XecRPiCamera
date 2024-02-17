@@ -99,8 +99,11 @@ class PreviewLabel(QLabel):
         util.log(f"Rendering gallery preview, width={G_PREVIEW_W}, height={G_PREVIEW_H}")
 
         self.setScaledContents(True)
-        self.setGeometry(0, 0, G_PREVIEW_W, G_PREVIEW_H)
-        self.setStyleSheet(f"border: 1px solid {BORDER_COLOR}; border-bottom: none;")
+        self.setGeometry(0, G_META_H, G_PREVIEW_W, G_PREVIEW_H)
+        self.setStyleSheet(f"""
+            border: 1px solid {BORDER_COLOR};
+            border-bottom: none;
+            border-top: none;""")
 
         self.loadImage()
 
@@ -109,20 +112,23 @@ class PreviewLabel(QLabel):
 
         self.setPixmap(QPixmap(img) if img else QPixmap())
 
+
 class MetaLabel(QLabel):
     def __init__(self, parent):
         super().__init__(parent)
 
-        W, H = G_META_W, G_META_H
-        X, Y = 1, 1
+        W, H = G_PREVIEW_W, G_META_H
+        X, Y = 0, 0
 
         util.log(f"Rendering photo meta, width={W}, height={H}, x={X}, y={Y}")
 
         style = f"""
             color: {TEXT_COLOR};
-            background-color: rgba(0, 0, 0, 0.5);
-            font-size: 11px;
-            padding: 1px;"""
+            background-color: {INFO_COLOR};
+            border: 1px solid {BORDER_COLOR};
+            border-bottom: none;
+            padding: 2px;
+            font-size: 11px;"""
         self.setGeometry(X, Y, W, H)
         self.setStyleSheet(style)
 
@@ -131,21 +137,18 @@ class MetaLabel(QLabel):
             self.setText("No images found")
             return
 
-        exif = Image.open(img)._getexif()
-        iso = int(exif[34855])
-        aperture = round(float(exif[33437]), 1)
-        shutter = round(1 / float(exif[33434]))
-        width = exif[256]
-        height = exif[257]
+        d = time.localtime(os.path.getctime(img))
+        date = time.strftime("%Y-%m-%d %H:%M:%S", d)
 
-        self.setText(f"ISO {iso} | f/{aperture} | 1/{shutter}s | {width}x{height}")
+        self.setText(date)
+
 
 class InfoLabel(QLabel):
     def __init__(self, parent):
         super().__init__(parent)
 
         W, H = G_PREVIEW_W, G_INFO_H
-        X, Y = 0, G_PREVIEW_H
+        X, Y = 0, G_PREVIEW_H + G_META_H
 
         util.log(f"Rendering gallery info, width={W}, height={H}, x={X}, y={Y}")
 
@@ -167,16 +170,19 @@ class InfoLabel(QLabel):
         filename = img.split("/")[-1]
         size = humanize.naturalsize(os.path.getsize(img))
 
-        d = time.localtime(os.path.getctime(img))
-        date = time.strftime("%Y-%m-%d %H:%M:%S", d)
-
         exif = Image.open(img)._getexif()
+        iso = int(exif[34855])
+        aperture = round(float(exif[33437]), 1)
+        shutter = round(1 / float(exif[33434]))
+        width = exif[256]
+        height = exif[257]
+
         model = exif[272]
         make = exif[271]
 
         content = f"""
             <b>{nth}/{total} {filename}</b> ({size})
-            <br>{date}
+            <br>ISO {iso} | f/{aperture} | 1/{shutter}s | {width}x{height}
             <br>Captured by {make} ({model})"""
         self.setText(content)
 

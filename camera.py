@@ -51,17 +51,22 @@ class PreviewLabel(QLabel):
         if not hasattr(self, "timer"):
             self.timer = QTimer(self)
             self.timer.timeout.connect(self.updateImage)
-        self.timer.start(UPDATE_DELAY)
+            self.timer.start(UPDATE_DELAY)
+
+        self.stopTimer = False
 
     def pause(self):
         self.cap.release()
-        self.timer.stop()
+        self.stopTimer = True
 
     def resume(self):
         self.configureCap()
         self.configureTimer()
 
     def updateImage(self):
+        if self.stopTimer:
+            return
+
         ret, frame = self.cap.read()
         frame = cv2.flip(frame, -1)
 
