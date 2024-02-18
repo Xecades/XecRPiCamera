@@ -43,6 +43,11 @@ class Window(QMainWindow):
         self.cameraView.preview.resume()
         self.cameraView.show()
 
+    def minimize(self):
+        util.log("Minimizing window")
+
+        self.showMinimized()
+
     def mousePressEvent(self, event):
         if not self.galleryView.delete.underMouse():
             self.galleryView.restoreDeleteButton()

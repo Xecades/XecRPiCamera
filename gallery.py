@@ -6,6 +6,7 @@ from PIL import Image
 from props import *
 from PyQt5.QtWidgets import QLabel, QPushButton
 from PyQt5.QtGui import QPixmap
+from PyQt5.QtCore import QTimer
 
 
 class GalleryView:
@@ -24,14 +25,11 @@ class GalleryView:
         self.exit = RawButton(parent, 0, 5, "Exit", util.hook(rdb, parent.exitGallery))
         self.prev = RawButton(parent, 1, 5, "Previous", util.hook(rdb, self.navigate(-1)))
         self.next = RawButton(parent, 2, 5, "Next", util.hook(rdb, self.navigate(1)))
-        self.send = RawButton(parent, 3, 5, "Send", util.hook(rdb, self.sendImg))
+        self.minimize = RawButton(parent, 3, 5, "Minimize", parent.minimize)
         self.delete = RawButton(parent, 4, 5, "Delete", self.deleteImg)
 
         self.refreshList()
         self.update()
-
-    def sendImg(self):
-        pass
 
     def restoreDeleteButton(self):
         self.readyToDelete = False
@@ -77,7 +75,7 @@ class GalleryView:
         self.info.updateInfo(self.pos + 1, len(self.imgs), img)
         self.meta.updateMeta(img)
 
-        for btn in [self.prev, self.next, self.send, self.delete]:
+        for btn in [self.prev, self.next, self.minimize, self.delete]:
             btn.setDisabled(not self.imgs)
 
     def __apply_all__(self, fn, *args):
@@ -86,7 +84,7 @@ class GalleryView:
         getattr(self.info, fn)(*args)
         getattr(self.meta, fn)(*args)
 
-        for btn in [self.exit, self.prev, self.next, self.send, self.delete]:
+        for btn in [self.exit, self.prev, self.next, self.minimize, self.delete]:
             getattr(btn, fn)(*args)
 
     def show(self): self.__apply_all__("show")
@@ -150,7 +148,13 @@ class MetaLabel(QLabel):
         d = time.localtime(os.path.getctime(img))
         date = time.strftime("%Y-%m-%d %H:%M:%S", d)
 
-        self.setText(date)
+        ip = util.ip()
+
+        text = date
+        if ip: text += f" - {ip}"
+        if ip and PORT != 80: text += f":{PORT}"
+
+        self.setText(text)
 
 
 class InfoLabel(QLabel):

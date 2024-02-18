@@ -1,5 +1,6 @@
 import os
 import time
+import socket
 
 
 def __console__(color, message):
@@ -39,3 +40,14 @@ def fetchLocalImages(path, extension=".jpg"):
     sorted_files = sorted(full_paths, key=os.path.getmtime, reverse=True)
 
     return sorted_files
+
+
+def ip():
+    try:
+        s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        s.connect(('8.8.8.8', 80))
+        ip = s.getsockname()[0]
+        s.close()
+    except:
+        ip = None
+    return ip
