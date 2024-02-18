@@ -38,7 +38,7 @@ class PreviewLabel(QLabel):
         if hasattr(self, "cap") and self.cap.isOpened():
             self.cap.release()
 
-        self.cap = cv2.VideoCapture(0)
+        self.cap = cv2.VideoCapture(-1)
 
         self.cap.set(cv2.CAP_PROP_FOURCC, cv2.VideoWriter_fourcc(*"MJPG"))
         self.cap.set(cv2.CAP_PROP_FRAME_WIDTH, DISPLAY_W)
