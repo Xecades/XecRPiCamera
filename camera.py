@@ -99,5 +99,5 @@ class GalleryButton(QPushButton):
     def updateThumbnail(self, img=None):
         util.log(f"Updating gallery thumbnail to {img or 'N/A'}")
 
-        style = f"border-image: url({img})" if img else "background: #fff"
+        style = f"border-image: url({img})" if img else "background: #000"
         self.setStyleSheet(style)

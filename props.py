@@ -8,6 +8,7 @@ DISPLAY_W = 480
 DISPLAY_H = 320
 G_INFO_H = 50
 G_META_H = 25
+G_MARGIN = 8
 G_PREVIEW_H = SCREEN_H - G_INFO_H - G_META_H
 G_PREVIEW_W = int(G_PREVIEW_H * 4 / 3)
 DCIM = os.path.expanduser("~/DCIM")

@@ -38,7 +38,6 @@ class Snapshot:
 
             self.pa.cameraView.button.updateThumbnail(path)
             self.pa.galleryView.refreshList()
-            self.pa.galleryView.update()
             self.pa.cameraView.preview.resume()
         else:
             util.error(f"Failed to take snapshot")

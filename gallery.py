@@ -15,6 +15,7 @@ class GalleryView:
 
         self.pa = parent
 
+        self.margin = MarginLabel(parent)
         self.preview = PreviewLabel(parent)
         self.info = InfoLabel(parent)
         self.meta = MetaLabel(parent)
@@ -80,6 +81,7 @@ class GalleryView:
             btn.setDisabled(not self.imgs)
 
     def __apply_all__(self, fn, *args):
+        getattr(self.margin, fn)(*args)
         getattr(self.preview, fn)(*args)
         getattr(self.info, fn)(*args)
         getattr(self.meta, fn)(*args)
@@ -95,14 +97,13 @@ class PreviewLabel(QLabel):
     def __init__(self, parent):
         super().__init__(parent)
 
-        util.log(f"Rendering gallery preview, width={G_PREVIEW_W}, height={G_PREVIEW_H}")
+        W, H = G_PREVIEW_W, G_PREVIEW_H
+        X, Y = G_MARGIN, G_META_H
+
+        util.log(f"Rendering gallery preview, width={W}, height={H}, x={X}, y={Y}")
 
         self.setScaledContents(True)
-        self.setGeometry(0, G_META_H, G_PREVIEW_W, G_PREVIEW_H)
-        self.setStyleSheet(f"""
-            border: 1px solid {BORDER_COLOR};
-            border-bottom: none;
-            border-top: none;""")
+        self.setGeometry(X, Y, W, H)
 
         self.loadImage()
 
@@ -112,20 +113,31 @@ class PreviewLabel(QLabel):
         self.setPixmap(QPixmap(img) if img else QPixmap())
 
 
+class MarginLabel(QLabel):
+    def __init__(self, parent):
+        super().__init__(parent)
+
+        W, H = G_MARGIN * 2 + G_PREVIEW_W, SCREEN_H
+        X, Y = 0, 0
+
+        util.log(f"Rendering gallery margin, width={W}, height={H}, x={X}, y={Y}")
+
+        self.setGeometry(X, Y, W, H)
+        self.setStyleSheet(f"background-color: {INFO_COLOR}; border: 1px solid {BORDER_COLOR};")
+
+
 class MetaLabel(QLabel):
     def __init__(self, parent):
         super().__init__(parent)
 
         W, H = G_PREVIEW_W, G_META_H
-        X, Y = 0, 0
+        X, Y = G_MARGIN, 0
 
         util.log(f"Rendering photo meta, width={W}, height={H}, x={X}, y={Y}")
 
         style = f"""
             color: {TEXT_COLOR};
-            background-color: {INFO_COLOR};
-            border: 1px solid {BORDER_COLOR};
-            border-bottom: none;
+            background-color: transparent;
             padding: 2px;
             font-size: 11px;"""
         self.setGeometry(X, Y, W, H)
@@ -133,7 +145,6 @@ class MetaLabel(QLabel):
 
     def updateMeta(self, img=None):
         if not img:
-            self.setText("No images found")
             return
 
         d = time.localtime(os.path.getctime(img))
@@ -147,15 +158,13 @@ class InfoLabel(QLabel):
         super().__init__(parent)
 
         W, H = G_PREVIEW_W, G_INFO_H
-        X, Y = 0, G_PREVIEW_H + G_META_H
+        X, Y = G_MARGIN, G_PREVIEW_H + G_META_H
 
         util.log(f"Rendering gallery info, width={W}, height={H}, x={X}, y={Y}")
 
         style = f"""
             color: {TEXT_COLOR};
-            background-color: {INFO_COLOR};
-            border: 1px solid {BORDER_COLOR};
-            border-top: none;
+            background-color: transparent;
             padding: 2px;
             font-size: 11px;"""
         self.setGeometry(X, Y, W, H)
@@ -190,9 +199,9 @@ class RawButton(QPushButton):
     def __init__(self, parent, nth, total, text, action):
         super().__init__(parent)
 
-        W = SCREEN_W - G_PREVIEW_W - MARGIN
+        W = SCREEN_W - G_PREVIEW_W - MARGIN - G_MARGIN * 2
         H = int((SCREEN_H + MARGIN) / total - MARGIN)
-        X = G_PREVIEW_W + MARGIN
+        X = G_PREVIEW_W + MARGIN + G_MARGIN * 2
         Y = nth * (H + MARGIN)
 
         util.log(f"Rendering gallery button {text}, width={W}, height={H}, x={X}, y={Y}")
