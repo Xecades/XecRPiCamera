@@ -10,7 +10,7 @@ class CameraView:
     def __init__(self, parent):
         self.preview = PreviewLabel(parent)
         self.button = GalleryButton(parent, parent.enterGallery)
-        self.filter = filterLabel(parent)
+        self.filter = FilterLabel(parent)
 
     def hide(self):
         self.preview.hide()
@@ -46,7 +46,9 @@ class PreviewLabel(QLabel):
         self.cap.set(cv2.CAP_PROP_FOURCC, cv2.VideoWriter_fourcc(*"MJPG"))
         self.cap.set(cv2.CAP_PROP_FRAME_WIDTH, C_DISPLAY_W)
         self.cap.set(cv2.CAP_PROP_FRAME_HEIGHT, C_DISPLAY_H)
-        self.cap.set(cv2.CAP_PROP_FPS, 30)
+        self.cap.set(cv2.CAP_PROP_FPS, 1000 / UPDATE_DELAY)
+
+        self.capLock = False
 
     def configureTimer(self):
         util.log("Configuring timer")
@@ -67,8 +69,9 @@ class PreviewLabel(QLabel):
         self.configureTimer()
 
     def updateImage(self):
-        if self.stopTimer:
+        if self.stopTimer or self.capLock:
             return
+        self.capLock = True
 
         ret, img = self.cap.read()
         img = cv2.flip(img, -1)
@@ -80,9 +83,11 @@ class PreviewLabel(QLabel):
             self.setPixmap(QPixmap.fromImage(img))
         else:
             util.error("Failed to capture frame")
+        
+        self.capLock = False
 
 
-class filterLabel(QLabel):
+class FilterLabel(QLabel):
     def __init__(self, parent):
         super().__init__(parent)
 
@@ -103,13 +108,13 @@ class filterLabel(QLabel):
         self.setStyleSheet(style)
 
         self.refresh()
-    
+
     def refresh(self):
         self.setText(self.method.capitalize())
         self.adjustSize()
 
     def switch(self):
-        methods = ["vanilla", "greyscale", "sepia", "hdr", "summer", "winter"]
+        methods = ["vanilla", "greyscale", "sepia", "summer", "winter"]
         self.method = methods[(methods.index(self.method) + 1) % len(methods)]
         util.log(f"Switching filter to {self.method}")
         self.refresh()

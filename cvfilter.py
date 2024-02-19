@@ -9,8 +9,6 @@ def choose(method):
         fn = greyscale
     elif method == "sepia":
         fn = sepia
-    elif method == "hdr":
-        fn = hdr
     elif method == "summer":
         fn = summer
     elif method == "winter":
@@ -24,7 +22,7 @@ def LookupTable(x, y):
 
 
 def vanilla(img):
-    return cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+    return img
 
 
 def greyscale(img):
@@ -40,10 +38,6 @@ def sepia(img):
     ret[np.where(ret > 255)] = 255
     ret = np.array(ret, dtype=np.uint8)
     return ret
-
-
-def hdr(img):
-    return cv2.detailEnhance(img, sigma_s=12, sigma_r=0.15)
 
 
 def summer(img):

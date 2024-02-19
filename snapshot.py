@@ -25,6 +25,7 @@ class Snapshot:
         util.log("Taking snapshot")
 
         self.pa.cameraView.preview.pause()
+        time.sleep(UPDATE_DELAY / 1000)
 
         timestamp = time.strftime("%Y%m%d_%H%M%S")
         file = f"snapshot_{timestamp}.jpg"
@@ -32,9 +33,12 @@ class Snapshot:
 
         cmd = ["raspistill", "-vf", "-hf", "-n",
                "-x", f"IFD0.Make={CAM_NAME}", "-o", path]
-        proc = subprocess.Popen(cmd)
+        # ret = subprocess.call(cmd)
+        proc = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        out, err = proc.communicate()
+        # proc = subprocess.run(cmd)
 
-        if proc.wait() == 0:
+        if proc.returncode == 0:
             util.log(f"Snapshot taken and saved at {path}")
 
             method = self.pa.cameraView.filter.method

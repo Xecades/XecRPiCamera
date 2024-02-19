@@ -6,7 +6,6 @@ from PIL import Image
 from props import *
 from PyQt5.QtWidgets import QLabel, QPushButton
 from PyQt5.QtGui import QPixmap
-from PyQt5.QtCore import QTimer
 
 
 class GalleryView:
@@ -145,7 +144,7 @@ class MetaLabel(QLabel):
         if not img:
             return
 
-        d = time.localtime(os.path.getctime(img))
+        d = time.localtime(os.path.getmtime(img))
         date = time.strftime("%Y-%m-%d %H:%M:%S", d)
 
         ip = util.ip()
@@ -182,20 +181,23 @@ class InfoLabel(QLabel):
         filename = img.split("/")[-1]
         size = humanize.naturalsize(os.path.getsize(img))
 
-        exif = Image.open(img)._getexif()
-        iso = int(exif[34855])
-        aperture = round(float(exif[33437]), 1)
-        shutter = round(1 / float(exif[33434]))
-        width = exif[256]
-        height = exif[257]
+        pil = Image.open(img)
 
-        model = exif[272]
-        make = exif[271]
+        exif = pil.getexif()
+        iso = f"ISO {exif[34855]} | " if exif.get(34855) else ""
+        aperture = f"f/{round(float(exif[33437]), 1)} | " if exif.get(33437) else ""
+        shutter = f"1/{round(1 / float(exif[33434]))}s | " if exif.get(33434) else ""
+
+        width = pil.width
+        height = pil.height
+
+        make = exif[271] if exif.get(271) else CAM_NAME
+        model = f" ({exif[272]})" if exif.get(272) else ""
 
         content = f"""
             <b>{nth}/{total} {filename}</b> ({size})
-            <br>ISO {iso} | f/{aperture} | 1/{shutter}s | {width}x{height}
-            <br>Captured by {make} ({model})"""
+            <br>{iso}{aperture}{shutter}{width}x{height}
+            <br>Captured by {make}{model}"""
         self.setText(content)
 
 
