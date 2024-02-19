@@ -3,6 +3,7 @@ import cv2
 import time
 import socket
 import numpy as np
+from PyQt5.QtGui import QImage
 from PIL import Image
 
 
@@ -18,6 +19,13 @@ def error(m): return __console__("\033[0;31m", m)
 
 def pil2cv(pil): return cv2.cvtColor(np.array(pil), cv2.COLOR_RGB2BGR)
 def cv2pil(cv): return Image.fromarray(cv2.cvtColor(cv, cv2.COLOR_BGR2RGB))
+
+
+def cv2qt(cv):
+    fmt = QImage.Format_RGB888
+    if len(cv.shape) == 2:
+        fmt = QImage.Format_Grayscale8
+    return QImage(cv.data, cv.shape[1], cv.shape[0], fmt)
 
 
 def both(f1, f2):

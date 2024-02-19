@@ -24,7 +24,7 @@ def LookupTable(x, y):
 
 
 def vanilla(img):
-    return img
+    return cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
 
 
 def greyscale(img):

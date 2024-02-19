@@ -37,7 +37,7 @@ class Snapshot:
         if proc.wait() == 0:
             util.log(f"Snapshot taken and saved at {path}")
 
-            method = "sepia"
+            method = self.pa.cameraView.filter.method
             util.log(f"Processing image with {method}")
             util.processImage(path, cvfilter.choose(method))
 
