@@ -3,8 +3,9 @@ import cv2
 import time
 import socket
 import numpy as np
+from props import *
 from PyQt5.QtGui import QImage
-from PIL import Image
+from PIL import Image, ImageFont, ImageDraw
 
 
 def __console__(color, message):
@@ -57,15 +58,20 @@ def fetchLocalImages(path, extension=".jpg"):
     return sorted_files
 
 
-def processImage(path, fn):
-    pil = Image.open(path)
+def processImagePIL(src, fn, dest=None):
+    pil = Image.open(src)
     exif = pil.getexif()
 
-    img = pil2cv(pil)
-    img = fn(img)
-    pil = cv2pil(img)
+    pil = fn(pil)
 
-    pil.save(path, exif=exif)
+    pil.save(dest or src, exif=exif)
+
+
+def processImageCV(src, fn, dest=None):
+    def wrapper(pil):
+        return cv2pil(fn(pil2cv(pil)))
+
+    processImagePIL(src, wrapper, dest)
 
 
 def ip():
@@ -77,3 +83,25 @@ def ip():
     except:
         ip = None
     return ip
+
+
+def timestamp(pil):
+    draw = ImageDraw.Draw(pil)
+
+    font = ImageFont.truetype(TS_FONT, TS_SIZE)
+    text = time.strftime("%Y-%m-%d %H:%M:%S")
+    X, Y = TS_LEFT, pil.height - TS_SIZE - TS_BOTTOM
+    _, _, rX, _ = draw.textbbox((X, Y), text, font=font, stroke_width=2)
+    draw.text((X, Y), text, font=font, fill=TS_COLOR,
+              stroke_width=2, stroke_fill=TS_STROKE_COLOR)
+
+    font = ImageFont.truetype(TS_FONT, TS_SIZE // 2)
+    X, Y = rX + 20, pil.height - TS_SIZE - TS_BOTTOM
+    draw.text((X, Y), "LYY-HZ", font=font, fill=TS_COLOR,
+              stroke_width=1, stroke_fill=TS_STROKE_COLOR)
+
+    X, Y = rX + 20, pil.height - TS_SIZE // 2 - TS_BOTTOM
+    draw.text((X, Y), "CAMERA", font=font, fill=TS_COLOR,
+              stroke_width=1, stroke_fill=TS_STROKE_COLOR)
+
+    return pil

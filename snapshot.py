@@ -43,7 +43,8 @@ class Snapshot:
 
             method = self.pa.cameraView.filter.method
             util.log(f"Processing image with {method}")
-            util.processImage(path, cvfilter.choose(method))
+            util.processImageCV(path, cvfilter.choose(method))
+            util.processImagePIL(path, util.timestamp)
 
             self.pa.cameraView.button.updateThumbnail(path)
             self.pa.galleryView.refreshList()
