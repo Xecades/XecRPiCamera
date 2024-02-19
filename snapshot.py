@@ -27,12 +27,16 @@ class Snapshot:
         self.pa.cameraView.preview.pause()
         time.sleep(UPDATE_DELAY / 1000)
 
+        method = self.pa.cameraView.filter.method
         timestamp = time.strftime("%Y%m%d_%H%M%S")
         file = f"snapshot_{timestamp}.jpg"
         path = f"{DCIM}/{file}"
 
         cmd = ["raspistill", "-vf", "-hf", "-n",
                "-x", f"IFD0.Make={CAM_NAME}", "-o", path]
+        if method == "retro":
+            cmd += ["-w", str(RETRO_W), "-h", str(RETRO_H)]
+
         # ret = subprocess.call(cmd)
         proc = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         out, err = proc.communicate()
@@ -41,10 +45,12 @@ class Snapshot:
         if proc.returncode == 0:
             util.log(f"Snapshot taken and saved at {path}")
 
-            method = self.pa.cameraView.filter.method
             util.log(f"Processing image with {method}")
+
             util.processImageCV(path, cvfilter.choose(method))
-            util.processImagePIL(path, util.timestamp)
+            if method == "retro":
+                util.log(f"Adding timestamp for retro mode")
+                util.processImagePIL(path, util.timestamp)
 
             self.pa.cameraView.button.updateThumbnail(path)
             self.pa.galleryView.refreshList()

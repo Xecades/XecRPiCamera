@@ -114,7 +114,7 @@ class FilterLabel(QLabel):
         self.adjustSize()
 
     def switch(self):
-        methods = ["vanilla", "greyscale", "sepia", "summer", "winter"]
+        methods = ["vanilla", "retro", "greyscale", "sepia", "summer", "winter"]
         self.method = methods[(methods.index(self.method) + 1) % len(methods)]
         util.log(f"Switching filter to {self.method}")
         self.refresh()

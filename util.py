@@ -90,18 +90,9 @@ def timestamp(pil):
 
     font = ImageFont.truetype(TS_FONT, TS_SIZE)
     text = time.strftime("%Y-%m-%d %H:%M:%S")
+
     X, Y = TS_LEFT, pil.height - TS_SIZE - TS_BOTTOM
-    _, _, rX, _ = draw.textbbox((X, Y), text, font=font, stroke_width=2)
     draw.text((X, Y), text, font=font, fill=TS_COLOR,
               stroke_width=2, stroke_fill=TS_STROKE_COLOR)
-
-    font = ImageFont.truetype(TS_FONT, TS_SIZE // 2)
-    X, Y = rX + 20, pil.height - TS_SIZE - TS_BOTTOM
-    draw.text((X, Y), "LYY-HZ", font=font, fill=TS_COLOR,
-              stroke_width=1, stroke_fill=TS_STROKE_COLOR)
-
-    X, Y = rX + 20, pil.height - TS_SIZE // 2 - TS_BOTTOM
-    draw.text((X, Y), "CAMERA", font=font, fill=TS_COLOR,
-              stroke_width=1, stroke_fill=TS_STROKE_COLOR)
 
     return pil
