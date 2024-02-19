@@ -93,6 +93,6 @@ def timestamp(pil):
 
     X, Y = TS_LEFT, pil.height - TS_SIZE - TS_BOTTOM
     draw.text((X, Y), text, font=font, fill=TS_COLOR,
-              stroke_width=2, stroke_fill=TS_STROKE_COLOR)
+              stroke_width=1, stroke_fill=TS_STROKE_COLOR)
 
     return pil
