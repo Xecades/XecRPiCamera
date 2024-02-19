@@ -1,6 +1,9 @@
 import os
+import cv2
 import time
 import socket
+import numpy as np
+from PIL import Image
 
 
 def __console__(color, message):
@@ -13,7 +16,11 @@ def log(m): return __console__("\033[0;32m", m)
 def error(m): return __console__("\033[0;31m", m)
 
 
-def hook(f1, f2):
+def pil2cv(pil): return cv2.cvtColor(np.array(pil), cv2.COLOR_RGB2BGR)
+def cv2pil(cv): return Image.fromarray(cv2.cvtColor(cv, cv2.COLOR_BGR2RGB))
+
+
+def both(f1, f2):
     def wrapper():
         f1()
         f2()
@@ -40,6 +47,17 @@ def fetchLocalImages(path, extension=".jpg"):
     sorted_files = sorted(full_paths, key=os.path.getmtime, reverse=True)
 
     return sorted_files
+
+
+def processImage(path, fn):
+    pil = Image.open(path)
+    exif = pil.getexif()
+
+    img = pil2cv(pil)
+    img = fn(img)
+    pil = cv2pil(img)
+
+    pil.save(path, exif=exif)
 
 
 def ip():

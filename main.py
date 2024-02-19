@@ -23,11 +23,12 @@ class Window(QMainWindow):
         self.showFullScreen()
 
         self.snapshot = Snapshot(self)
-
         self.galleryView = GalleryView(self)
 
     def enterGallery(self):
         util.log("Entering gallery")
+
+        self.snapshot.lock = True
 
         self.cameraView.preview.pause()
         self.cameraView.hide()
@@ -38,6 +39,8 @@ class Window(QMainWindow):
 
     def exitGallery(self):
         util.log("Exiting gallery")
+
+        self.snapshot.lock = False
 
         self.galleryView.hide()
         self.cameraView.preview.resume()

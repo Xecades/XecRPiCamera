@@ -22,9 +22,9 @@ class GalleryView:
         self.meta = MetaLabel(parent)
 
         rdb = self.restoreDeleteButton
-        self.exit = RawButton(parent, 0, 5, "Exit", util.hook(rdb, parent.exitGallery))
-        self.prev = RawButton(parent, 1, 5, "Previous", util.hook(rdb, self.navigate(-1)))
-        self.next = RawButton(parent, 2, 5, "Next", util.hook(rdb, self.navigate(1)))
+        self.exit = RawButton(parent, 0, 5, "Exit", util.both(rdb, parent.exitGallery))
+        self.prev = RawButton(parent, 1, 5, "Previous", util.both(rdb, self.navigate(-1)))
+        self.next = RawButton(parent, 2, 5, "Next", util.both(rdb, self.navigate(1)))
         self.minimize = RawButton(parent, 3, 5, "Minimize", parent.minimize)
         self.delete = RawButton(parent, 4, 5, "Delete", self.deleteImg)
 

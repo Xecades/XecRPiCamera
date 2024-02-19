@@ -2,24 +2,25 @@ import util
 import time
 import subprocess
 import RPi.GPIO as GPIO
+import cvfilter
 from props import *
 
 
 class Snapshot:
     def __init__(self, parent):
         self.lock = False
+        self.last = time.time()
         self.pin = SNAPSHOT_PIN
         self.pa = parent
 
         GPIO.setmode(GPIO.BCM)
         GPIO.setup(self.pin, GPIO.IN, pull_up_down=GPIO.PUD_UP)
-        GPIO.add_event_detect(self.pin, GPIO.FALLING,
+        GPIO.add_event_detect(self.pin, GPIO.RISING,
                               callback=self.take, bouncetime=200)
 
     def take(self, _):
-        if self.lock:
+        if self.last + SNAPSHOT_DT > time.time() or self.lock:
             return
-        self.lock = True
 
         util.log("Taking snapshot")
 
@@ -31,10 +32,14 @@ class Snapshot:
 
         cmd = ["raspistill", "-vf", "-hf", "-n",
                "-x", f"IFD0.Make={CAM_NAME}", "-o", path]
-        ret = subprocess.call(cmd)
+        proc = subprocess.Popen(cmd)
 
-        if ret == 0:
+        if proc.wait() == 0:
             util.log(f"Snapshot taken and saved at {path}")
+
+            method = "sepia"
+            util.log(f"Processing image with {method}")
+            util.processImage(path, cvfilter.choose(method))
 
             self.pa.cameraView.button.updateThumbnail(path)
             self.pa.galleryView.refreshList()
@@ -43,7 +48,9 @@ class Snapshot:
             util.error(f"Failed to take snapshot")
             self.pa.cameraView.preview.resume()
 
-        self.lock = False
+        util.log("Snapshot process complete")
+
+        self.last = time.time()
 
     def __del__(self):
         GPIO.cleanup()

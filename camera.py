@@ -88,7 +88,7 @@ class GalleryButton(QPushButton):
         X = SCREEN_W - W - 10
         Y = SCREEN_H - H - 10
 
-        util.log(f"Rendering gallery switcher button, width={W}, height={H}, x={X}, y={Y}")
+        util.log(f"Rendering gallery switch button, width={W}, height={H}, x={X}, y={Y}")
 
         self.setGeometry(X, Y, W, H)
         self.clicked.connect(action)

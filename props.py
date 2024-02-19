@@ -15,6 +15,7 @@ G_PREVIEW_W = int(G_PREVIEW_H * 4 / 3)
 DCIM = os.path.expanduser("~/DCIM")
 PORT = 80
 SNAPSHOT_PIN = 26
+SNAPSHOT_DT = 1
 CAM_NAME = "LYY&HZ Camera"
 BG_COLOR = "#000"
 BORDER_COLOR = "#444"
