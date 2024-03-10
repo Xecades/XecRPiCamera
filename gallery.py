@@ -10,7 +10,6 @@ from PyQt5.QtGui import QPixmap
 
 class GalleryView:
     def __init__(self, parent):
-        self.pos = 0
         self.readyToDelete = False
 
         self.pa = parent
@@ -28,6 +27,7 @@ class GalleryView:
         self.delete = RawButton(parent, 4, 5, "Delete", self.deleteImg)
 
         self.refreshList()
+        self.pos = len(self.imgs) - 1
         self.update()
 
     def restoreDeleteButton(self):
@@ -40,7 +40,7 @@ class GalleryView:
             self.restoreDeleteButton()
 
             img = self.imgs[self.pos]
-            
+
             util.log(f"Deleting image {img}")
 
             os.remove(img)

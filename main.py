@@ -33,7 +33,7 @@ class Window(QMainWindow):
         self.cameraView.preview.pause()
         self.cameraView.hide()
 
-        self.galleryView.pos = 0
+        self.galleryView.pos = len(self.galleryView.imgs) - 1
         self.galleryView.update()
         self.galleryView.show()
 
